@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineWorld - Ultimate Movie Experience</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        header {
+            background: #121212;
+            padding: 1.2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ff4757;
+            text-shadow: 0 0 15px rgba(255, 71, 87, 0.6);
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 600px;
+            margin: 0 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 50px 12px 20px;
+            border: none;
+            border-radius: 30px;
+            background: #1c1c1c;
+            color: #fff;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: #252525;
+            border-color: #ff4757;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #ff4757;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            color: #ff6b7a;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 5rem 0;
+            background: #0a0a0a;
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff4757, #ff6b7a, #c44569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(255, 71, 87, 0.4);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.85;
+            margin-bottom: 2.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2.5rem 0;
+        }
+
+        .category-btn {
+            padding: 12px 28px;
+            background: #1c1c1c;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            border-color: #ff4757;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            padding: 2.5rem 0;
+        }
+
+        .movie-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .movie-item:hover {
+            transform: translateY(-8px);
+        }
+
+        .movie-poster {
+            width: 100%;
+            aspect-ratio: 3 / 2;
+            object-fit: cover;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .movie-item:hover .movie-poster {
+            transform: scale(1.03);
+        }
+
+        .movie-info {
+            padding: 1rem 0;
+            background: none;
+        }
+
+        .movie-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+            line-height: 1.4;
+        }
+
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+
+        .rating {
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.3rem;
+            opacity: 0.75;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 71, 87, 0.3);
+            border-top: 3px solid #ff4757;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        footer {
+            background: #121212;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.2rem;
+            }
+
+            .search-container {
+                margin: 0;
+                max-width: 100%;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .movies-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .movie-poster {
+                height: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.8rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .movies-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+
+            .category-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .movie-poster {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🎬 CineWorld</div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search for movies...">
+                    <button class="search-btn" onclick="searchMovies()"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Welcome to CineWorld</h1>
+                <p>Discover the ultimate movie experience with rich details, seamless streaming, and high-quality downloads.</p>
+                
+                <div class="categories">
+                    <button class="category-btn active" onclick="searchMovies('new')">New</button>
+                    <button class="category-btn" onclick="searchMovies('action')">Action</button>
+                    <button class="category-btn" onclick="searchMovies('comedy')">Comedy</button>
+                    <button class="category-btn" onclick="searchMovies('drama')">Drama</button>
+                    <button class="category-btn" onclick="searchMovies('sci-fi')">Sci-Fi</button>
+                    <button class="category-btn" onclick="searchMovies('horror')">Horror</button>
+                    <button class="category-btn" onclick="searchMovies('romance')">Romance</button>
+                    <button class="category-btn" onclick="searchMovies('thriller')">Thriller</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <div id="moviesContainer">
+                <div class="loading">Loading movies...</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Created by Chathura Hansaka ©2025 - CineWorld</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentMovies = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            searchMovies('new');
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchMovies();
+            }
+        });
+
+        async function searchMovies(query = 'new') {
+            const searchQuery = query || document.getElementById('searchInput').value.trim() || 'new';
+            const moviesContainer = document.getElementById('moviesContainer');
+            
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            if (query) {
+                event.target?.classList.add('active');
+            } else {
+                const categoryBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.toLowerCase() === searchQuery.toLowerCase());
+                if (categoryBtn) {
+                    categoryBtn.classList.add('active');
+                }
+            }
+            
+            moviesContainer.innerHTML = '<div class="loading">Searching movies...</div>';
+            
+            try {
+                const response = await fetch(`https://cinema.api.skymansion.site/search.php?q=${encodeURIComponent(searchQuery)}`);
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                console.log('API Response:', data);
+                
+                if (data.success && data.data.length > 0) {
+                    currentMovies = data.data;
+                    console.log('Movies:', currentMovies);
+                    if (currentMovies.length > 0) {
+                        displayMovies(currentMovies);
+                    } else {
+                        moviesContainer.innerHTML = '<div class="loading">No movies found. Try a different category or search term.</div>';
+                    }
+                } else {
+                    moviesContainer.innerHTML = '<div class="loading">No movies found. Try a different search term.</div>';
+                }
+            } catch (error) {
+                console.error('Error fetching movies:', error);
+                moviesContainer.innerHTML = `<div class="loading">Error loading movies: ${error.message}. Please try again later or check the console for more details.</div>`;
+            }
+        }
+
+        function displayMovies(movies) {
+            const moviesContainer = document.getElementById('moviesContainer');
+            const moviesGrid = document.createElement('div');
+            moviesGrid.className = 'movies-grid';
+            
+            movies.forEach((movie) => {
+                const movieItem = document.createElement('div');
+                movieItem.className = 'movie-item';
+                movieItem.onclick = () => window.location.href = `/movie-details.html?link=${encodeURIComponent(movie.link)}`;
+                
+                const year = movie.year || 'N/A';
+                const rating = movie.rating?.replace('IMDb ', '') || 'N/A';
+                
+                movieItem.innerHTML = `
+                    <img src="${movie.image}" alt="${movie.title}" class="movie-poster" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDI4MCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iNDAwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjE0MCIgeT0iMjAwIiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiPpNvb0ltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
+                    <div class="movie-info">
+                        <div class="movie-title">${movie.title.replace(' Sinhala Subtitles | සිංහල උපසිරැසි සමඟ', '').replace(' – Cinesubz.co  – Sinhala Subtitles සිංහල උපසිරැසි සමඟ චිත්‍රපට', '')}</div>
+                        <div class="movie-meta">
+                            <span>${year}</span>
+                            <span class="rating">${rating}</span>
+                        </div>
+                    </div>
+                `;
+                
+                moviesGrid.appendChild(movieItem);
+            });
+            
+            moviesContainer.innerHTML = '';
+            moviesContainer.appendChild(moviesGrid);
+        }
+    </script>
+</body>
+                      </html>
